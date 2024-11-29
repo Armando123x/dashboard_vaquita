@@ -1,0 +1,81 @@
+ 
+/* body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+} */
+
+.led-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.led-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #330000; /* LED apagado */
+    border: 6px solid #444;
+    box-shadow: inset 0 0 20px #000, 0 0 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+}
+
+/* Efecto animado cuando está encendido */
+.led-button.on {
+    background-color: #ff0000; /* Color del LED encendido */
+    box-shadow: 0 0 25px rgba(255, 0, 0, 1), inset 0 0 20px #880000;
+    animation: pulse 1.5s infinite; /* Efecto pulsante */
+}
+
+/* Ajustamos el brillo para que esté centrado */
+.led-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+/* Brillo cuando está encendido */
+.led-button.on::before {
+    opacity: 0.8;
+}
+
+/* Animación de pulso */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 15px #880000;
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(255, 0, 0, 1), inset 0 0 30px #ff0000;
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 15px #880000;
+    }
+}
+
+/* Diseño adaptable para pantallas más pequeñas */
+@media (max-width: 600px) {
+    .led-button {
+        width: 80px;
+        height: 80px;
+    }
+
+    .led-button::before {
+        width: 50px;
+        height: 50px;
+    }
+}
+ 

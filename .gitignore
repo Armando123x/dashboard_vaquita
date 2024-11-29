@@ -1,0 +1,7 @@
+.DS_Store
+*.pyc
+*.sqlite3
+.env
+migrations/
+mysql/*
+./app/media/*

@@ -1,0 +1,438 @@
+{% extends 'layouts/base.html' %}
+{% load i18n static %}
+
+{% block title %} {{title}} {% endblock title %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<div class="container-fluid py-5">
+
+    <div class="row" id="error-message" style="display: none;">
+
+        <div class="card">
+            
+            <h5>Revise el valor ingresado</h5>
+            
+        </div>
+    </div>
+
+
+    <div class="row" id="div-first">
+    <div class="col-xl-6 col-sm-12 mb-4">
+        <div class="card">
+            <h3>Seleccione una opción</h3>
+            <select id="select-option" class="form-control tools-input mt-2" style="border: 1px solid #303030;">
+                <option value="0">Seleccione opción</option> 
+                <option value="command">Enviar comando a la estación</option>
+                <option value="parameter">Cambiar parámetro de la estación</option> 
+            </select>
+
+        <a class="btn btn-primary mt-2" onclick="toggleElements()" >Continue > </a>
+        </div>
+    </div>
+    </div>
+
+
+ 
+
+    <!-- commands -->
+
+    <div class="row" id="div-select-command" style="display: none;">
+        <div class="col-xl-6 col-sm-12 mb-4">
+            <div class="card">
+                <h3>Seleccione una opción</h3>
+                <select id="select-option-commands" class="form-control tools-input mt-2" style="border: 1px solid #303030;">
+                    <option value="0">Seleccione opción</option> 
+                    <option value="command1">Actualizar Firmware Raspberry Pi</option>
+                    <option value="command2">Reiniciar sistema</option> 
+                    <option value="command3">Actualizar Firmware ESP32</option> 
+                    <option value="command3">Apagar camara</option> 
+                </select>
+    
+            <a class="btn btn-primary mt-2" onclick="toggleElements()" >Continue > </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- change values -->
+
+    <div class="row" id="div-select-variable" style="display: none;">
+        <div class="col-xl-6 col-sm-12 mb-4">
+            <div class="card">
+                <h3>Seleccione una opción</h3>
+                <select id="select-option-variable" class="form-control tools-input mt-2" style="border: 1px solid #303030;">
+                    <option value="0">Seleccione opción</option> 
+                    <option value="0">------ Options for Lidar -------</option> 
+                    <option value="parameter1">Change Min. Height Water for Lidar</option>
+                    <option value="parameter2">Change Rare Height for Lidar</option> 
+                    <option value="parameter3">Change Min. Minus Height Water for Lidar</option> 
+                    <option value="parameter4">Change Min. Time for Lidar ON</option> 
+                    <option value="parameter5">Change Min. Time for Lidar OFF</option> 
+                    <option value="0">------ Options for Radar Sensor -------</option> 
+                    <option value="parameter6">Change Min. Time ON Sensor for activate</option> 
+                    <option value="parameter7">Change Min. Time OFF Sensor for deactivate</option> 
+                    <option value="0">------ Options for MQTT -------</option> 
+                    <option value="parameter8">Change MQTT Send Time</option> 
+                    <option value="parameter9">Change MQTT Broker</option> 
+                    <option value="parameter10">Change MQTT Port</option> 
+                    <option value="parameter11">Change MQTT User</option> 
+                    <option value="parameter12">Change MQTT Password</option> 
+                    <option value="parameter13">Change MQTT Topic for Data</option> 
+                    <option value="parameter14">Change MQTT Topic for Configuration</option>
+                    <option value="0">------ System Options -------</option>   
+                    <option value="parameter15">Change location</option> 
+                    <option value="parameter16">Change Sampling Time UART</option> 
+                    <option value="parameter17">Change Sampling Time Sensors</option> 
+
+
+
+                </select>
+    
+            <a class="btn btn-primary mt-2" onclick="toggleElements()" >Continue > </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" id="promp-insert" style="display: none;">
+        <div class="col-xl-6 col-sm-12 mb-4">
+            <div class="card">
+                <h4>Cambio de valor</h4>
+                <h6 id="field-name-variable">Variable:</h6>
+                <h6 id="field-info-variable">Información de la variable:<b></b></h6>
+                <h6>Inserte nuevo valor:</h6>
+                <input type="text" id="field-value" placeholder="Ingrese valor">
+    
+            <a class="btn btn-primary mt-2" onclick="toggleElements()" >Continue > </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="confirmation-ok" style="display: none;">
+<h6>Ha sido enviada correctamente la configuración por MQTT</h6>
+</div>
+
+<div id="confirmation-fail" style="display: none;">
+<h6>Falló enviar la configuración por MQTT</h6>
+
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+    //------------------ Diccionario información --------------------//
+    var lista = [
+    "Define el tiempo de envío de datos de sensores al servidor MQTT.\nInserte valor en segundos de formato entero o decimal [:2.2f]",
+    "Define el tiempo de muestreo para lectura de los sensores. Valor otorgado al microcontrolador.\nInserte valor de segundos en formato entero o decimal [:2.2f].",
+    "Minimo tiempo que debe de estar activo un sensor Doppler de salida digital para considerar como activo la estación.\nInserte valor en milisegundos [:5d].",
+    "Tiempo de espera para la toma de fotografías.\nInserte valor en segundos.",
+    "Tiempo de muestreo para la lectura de valores del puerto UART. Valor otorgado a la Raspberry Pi.\nInserte valor en segundos [:3.2f].",
+    "Tiempo de verificación de la conectividad a Internet.\nInserte valor en segudnos de formato entero o decimal [:3.2f]",
+    "Número máximo de sensores por tipo de sensor.\nInserte valor estrictamente de formato entero [:1d]",
+    "Dirección Ip del broker MQTT. Ejemplo: 10.122.12.3",
+    "Puerto del broker MQTT.Inserte valor en formato entero.",
+    "Contraseña del broker MQTT. Inserte nueva contraseña:",
+    "Usuario del broker MQTT. Inserte nuevo usuario:",
+    "Tópico para la publicación de datos.Ejemplo de datos: path/to/topic.",
+    "Tópico para la publicación de fotos.Ejemplo de datos: path/to/topic.",
+    "Tópico para la recepción de valores de configuración.Ejemplo de datos: path/to/topic.\nInserte nuevo tópico:",
+    "Ubicación del dispositivo.\nInserte valor:",
+    "Dirección IP de red de la cámara.\n Cambiar valor si solo es necesario:",
+    "Bandera que activa a la cámara para la toma de fotos en cualquier tiempo o estación del año.\nEjemplo de datos: true,false,0,1\nInserte valor:",
+    "Minimo tiempo que debe ser superior la diferencia medida para considerar activado el sensor.",
+    "Minimo tiempo que debe ser inferior la diferencia medida para que sea considerado el evento desactivado.",
+    "Minima altura que debe de marcar el lidar para considerar como columnna de agua valida.",
+    "Minima altura negativa que se debe de consdierar para realizar una calibración.",
+    "Minima altura que se considera a los eventos raros. Por ejemplo, podría pasar una persona y se quiere caber en todas las posibilidades."];
+
+    let var1= false;
+    let var2= false;
+    let var3= false;
+
+    var positive_digits = ["parameter1","parameter2","parameter3","parameter4","parameter5","parameter6","parameter7","parameter8","parameter10","parameter16","parameter17"]
+    var strings         = ["parameter9","parameter11","parameter12","parameter13","parameter14","parameter15"]
+ 
+
+    console.log("uwu");
+    // Función para mostrar u ocultar elementos
+    function toggleElements() {
+ 
+
+      var select_option = document.getElementById("div-first");
+      var select_command = document.getElementById("div-select-command");
+      var select_variable = document.getElementById("div-select-variable");
+
+      var selectElement = document.getElementById("select-option");
+
+      var option = "";
+ 
+      option =  selectElement.value;
+    
+ 
+      if(var1 == false & var2==false & var3 == false)
+      {
+        var valor  = selectElement.value;
+
+        option = valor;
+
+        if(valor=="command")
+        {
+        select_command.style.display = "block";
+        
+        select_option.style.display = "none";
+        select_variable.style.display = "none";
+        var1 = true;
+
+        }
+        else if(valor=="parameter")
+        {
+        select_variable.style.display = "block";
+        
+        select_option.style.display = "none";
+        select_command.style.display = "none";
+        var1 = true;
+
+        }
+        else
+        {
+        var1 = false;
+
+        }
+
+        
+      }
+      else if(var1 == true & var3==false & var2== false)
+      {
+        // Aqui seleccionamos la variable o comando 
+ 
+        if(option=="command")
+        {
+            select_command.style.display = "none";
+            var options = document.getElementById("div-select-command");
+            
+            
+
+        }
+        else if (option=="parameter")
+        {
+             
+
+            var h4Element = document.getElementById("field-name-variable")
+            var h5Elements = document.getElementById("field-info-variable");
+
+            var element = document.getElementById("select-option-variable"); 
+            var select = element.value; 
+            var selectedIndex = element.selectedIndex;
+
+
+            if(select!=0)
+            {
+            
+            
+            //var numero = parseInt(variable.match(/\d+/)[0]) - 1;    
+            //console.log(selectedIndex);
+            var variable = element.options[selectedIndex].text;            
+            h4Element.innerHTML = "Variable: "+variable;
+
+            
+            //Add more lineas for option
+            h5Elements.innerHTML = "Información: " +lista[1];
+
+
+            element = document.getElementById("promp-insert");
+
+            select_variable.style.display = "none";
+
+            element.style.display = "block";
+
+            var2 = true;
+            
+
+           if(positive_digits.includes(select))
+            {
+                //Cambiamos opción de entrada a digitos
+                var inputField = document.getElementById('field-value');
+
+                inputField.type = "number";
+            }
+
+            else{
+                var inputField = document.getElementById('field-value');
+
+                inputField.type = "text";
+            }
+
+
+
+            }
+
+
+        }
+
+
+
+      }
+
+      else if (var1==true & var2==true & var3==false)
+      {
+        //Revisamos la lógica de envío
+        var element = document.getElementById("select-option-variable"); 
+        var select = element.value; 
+        var selectedIndex = element.selectedIndex;
+        
+        var variable = element.options[selectedIndex].text;
+
+        var inputField = document.getElementById('field-value');
+        
+        //Valor recibido
+        var value = inputField.value;
+        
+        //---------------- Revision del valor recibido ----------------
+        
+        var logic = check_parameter(value,select);
+        
+        if(logic)
+        {
+        //-----------------  Preparación de la trama ------------------
+        // Si el campo recibido es correcto
+
+        var1 = false;
+        var2 = false;
+        
+        var element_error = document.getElementById("error-message");
+        var element_field = document.getElementById("promp-insert");
+        
+        element_field.style.display = "none";
+        element_error.style.display = "none";
+
+
+
+        var message = { }; 
+        message[variable] = value;
+
+        var pk = "{{pk}}";
+        var request = {
+            'type':'per_user', 
+            "message":JSON.stringify(message),
+            'option':option
+        }
+        var queryString = $.param(request);
+
+        var url = "{% url 'send_mqtt' pk=pk %}?" + queryString;
+
+        // Realizar una solicitud AJAX a la vista customize_station
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function(response) {
+             
+                $("#confirmation-ok").show();
+                console.log(response)
+                setTimeout(function() {
+                    $("#confirmation-ok").fadeOut(
+                        function() {
+
+                        var url = "{% url 'station_view' pk=pk %}";
+                        window.location.href = url;
+                    }
+                    );
+                }, 3000);
+            },
+            error: function(xhr, status, error) {
+            
+                console.log("Error en la solicitud:", error);
+                console.log("status:",status)
+                $("#confirmation-fail").show();
+
+                setTimeout(function() {
+                    $("#confirmation-fail").fadeOut(
+                    function() {
+                        var url = "{% url 'station_view' pk=pk %}";
+                        window.location.href = url;
+                    }
+
+
+                    );
+                }, 3000);
+            }
+        });
+        }
+        else
+        {
+
+            var element_error = document.getElementById("error-message");
+            
+            element_error.style.display = "block";
+        }
+
+ 
+
+      
+
+
+
+      }
+ 
+    }
+
+function check_parameter(value,select)
+{
+    if(positive_digits.includes(select))
+    {
+        //Verificamos que sea un digito 
+
+        var numero = parseFloat(value);
+        if (!isNaN(parseFloat(numero))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    else
+    {
+        //Verificamos el texto según el tipo
+        if(select=="parameter9")
+        {
+            //Se seleccionó cambiar el broker. Formato: xxxx.xxxx.xxxx.xxxx
+            var ipv4Regex = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+
+            if(ipv4Regex.test(value))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        var especial_options = ["parameter13","parameter14"]
+
+        if(especial_options.includes(select))
+        {   
+            //Se selecciono cambiar el topico
+            //El valor debe de ser tipo .../....../....
+            var regex = /^[^/][A-Za-z0-9_\-/#+]*$/;
+
+            if(regex.test(value))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+
+    }
+
+}
+  </script>
+{% endblock scripts %}

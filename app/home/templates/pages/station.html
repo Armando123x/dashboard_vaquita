@@ -1,0 +1,585 @@
+{% extends 'layouts/base.html' %}
+{% load i18n static %}
+
+{% block title %} {{title}} {% endblock title %}
+
+{% block content %}
+<link id="radio-lights" href="{% static 'css/material-dashboard-lights.css'}" rel="stylesheet"/>
+
+    <div class="container-fluid py-4">
+    
+
+      <!--Foto-->
+      <div class="row">
+        <div class="col-xl-6 col-sm-12 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">camera</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Camera</p>
+                <br>
+                <img class="img img-fluid" src="{{url_img}}">
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <div class="d-flex ">
+              <i class="material-icons text-sm my-auto me-1">schedule</i>
+              <p class="mb-0 text-sm"> updated {{img_latest}} ago </p>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <!--Sensores -->
+        
+ 
+        <div class="col-xl-6 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">settings</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Status</p>
+                <h4 class="mb-0 text-info">{{station.name}}</h4>
+                {% if station.server.get_mode_display == 'Maintenance' %}
+                <h6 class="mb-0 text-secundary">{{station.server.get_mode_display}}</h6>
+                {% elif station.server.get_mode_display == 'Simulacrum' %}
+                <h6 class="mb-0 text-danger">{{station.server.get_mode_display}}</h6>
+                {% elif station.server.get_mode_display == 'Operation' %}
+                <h6 class="mb-0 text-success">{{station.server.get_mode_display}}</h6>
+                {%endif%}
+    
+              </div>
+            </div>
+
+            {%if station.radar_HFS and latest_data.cruceta1 or latest_data.cruceta2 or latest_data.cruceta3 or latest_data.cruceta4 %}
+            <div class="card-body card-lights col-xl-12 col-sm-6 mb-4 border-top border-bottom">
+              <div class="led-container">
+                <h6 class="mb-1 text-dark font-weight-bold text-sm">Cruceta 1</h6>
+                <div class="led-button" id="btCruceta1"></div>
+              </div>
+              <div class="led-container">
+                <h6 class="mb-1 text-dark font-weight-bold text-sm">Cruceta 2</h6>
+                <div class="led-button" id="btCruceta2"></div>
+              </div>
+      
+              <div class="led-container">
+                <h6 class="mb-1 text-dar/stk font-weight-bold text-sm">Cruceta 3</h6>
+                <div class="led-button" id="btCruceta3"></div>
+              </div>
+      
+              <div class="led-container">
+                <h6 class="mb-1 text-dark font-weight-bold text-sm">Cruceta 4</h6>
+                <div class="led-button" id="btCruceta4"></div>
+              </div>
+            </div>
+            {%endif%}
+
+            
+            <div class="card-body p-3 pb-0">
+              <ul class="list-group scrollable-list">
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+              <div class="d-flex flex-column">
+              <h6 class="mb-1 text-dark font-weight-bold text-sm">Status Station:</h6>
+              <span class="text-xs"></span>
+              </div>
+              {% if latest_data.state == 0 %}
+                <div class="d-flex align-items-center text-sm text-secundary">
+                  Normal
+                </div>
+              {% elif latest_data.state > 0 %}
+                <div class="d-flex align-items-center text-sm text-danger">
+                  High
+                </div>
+              {% endif %}
+              </li>
+              {% if station.lidar %}
+              
+              {% if latest_data.lidar_status %}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Lidar Status</h6>
+                  <span class="text-xs"></span>
+                </div>
+                <div class="d-flex align-items-center text-danger">Activate</div>
+              </li>
+              {%else%}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Lidar Status</h6>
+                  <span class="text-xs"></span>
+                </div>
+                <div class="d-flex align-items-center text-secundary">False</div>
+              </li>
+              {%endif%}
+              {%endif%}
+              {%if latest_data.camera%}
+              {%if latest_data.status_ML%}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Status ML</h6>
+                  <span class="text-xs"></span>
+                </div>
+                <div class="d-flex align-items-center text-danger">Activate</div>
+              </li>
+              {%else%}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Status ML</h6>
+                  <span class="text-xs"></span>
+                </div>
+                <div class="d-flex align-items-center text-secundary">False</div>
+              </li>          
+              {%endif%}
+              {%endif%}
+              
+              {%if station.lidar%}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+              <div class="d-flex flex-column">
+              <h6 class="text-dark mb-1 font-weight-bold text-sm">Level</h6>
+              <span class="text-xs">[cm]</span>
+              </div>
+              <div class="d-flex align-items-center text-sm">
+              {{latest_data.difference_H}}
+              </div>
+              </li>
+              {%endif%}
+
+
+              <!-- <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+              <div class="d-flex flex-column">
+              <h6 class="text-dark mb-1 font-weight-bold text-sm">Flow</h6>
+              <span class="text-xs">[Lt/s]</span>
+              </div>
+              <div class="d-flex align-items-center text-sm">
+              No definido              
+              </div>
+              </li> -->
+
+
+              
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Temperature System</h6>
+                  <span class="text-xs">[deegres]</span>
+                </div>
+                <div class="d-flex align-items-center text-sm">{{latest_data.temperature}}</div>
+              </li>
+
+              {%if station.measure_voltage%}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Panel Voltage</h6>
+                  <span class="text-xs">[V]</span>
+                </div>
+                <div class="d-flex align-items-center text-sm">{{latest_data.voltage_pannel}}</div>
+              </li>
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Battery Voltage</h6>
+                  <span class="text-xs">[V]</span>
+                </div>
+                <div class="d-flex align-items-center text-sm">{{latest_data.voltage_battery}}</div>
+              </li>
+              {%endif%}
+              
+              {%if latest_data.camera %}
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Inference ML</h6>
+                  <span class="text-xs">[u]</span>
+                </div>
+                <div class="d-flex align-items-center text-sm">
+                  {{latest_data.inference_ML}}
+                  </div>
+              </li>
+              {%endif%}
+
+
+              <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+                <div class="d-flex flex-column">
+                  <h6 class="text-dark mb-1 font-weight-bold text-sm">Internet Usage Monthly</h6>
+                  <span class="text-xs">[MB]</span>
+                </div>
+                <div class="d-flex align-items-center text-sm">
+                  {{latest_data.internet_MB}}
+                  </div>
+              </li>
+
+
+              </ul>
+
+              </div>
+
+
+              <hr class="dark horizontal my-0">
+              <div class="card-footer p-3">
+                <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm"> updated {{time_latest}} ago </p>
+                </div>
+              </div>
+          </div>
+
+        </div>
+
+
+      </div>
+ 
+
+    <!-- <div class="row">
+
+    </div> -->
+
+
+
+      <!-- GRAPHS -->
+      <div class="row mb-4">
+        <div class="col-lg-6 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2  ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-warning shadow-success border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-line" class="chart-canvas" height="170"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 "> Level </h6>
+              <p class="text-sm "> Height above ground in cm. </p>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm"> updated {{time_latest}} ago </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 mt-4 mb-4">
+          <div class="card z-index-2  ">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2 bg-transparent">
+              <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
+                <div class="chart">
+                  <canvas id="chart-voltages" class="chart-canvas" height="170"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h6 class="mb-0 "> Voltages </h6>
+              <p class="text-sm "> Panel and battery voltages. </p>
+              <hr class="dark horizontal">
+              <div class="d-flex ">
+                <i class="material-icons text-sm my-auto me-1">schedule</i>
+                <p class="mb-0 text-sm"> updated {{time_latest}} ago </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div>{{debug}}</div>
+
+      {% include 'includes/footer.html' %}
+    </div>
+  {% endblock content %}
+
+ 
+  {% block scripts %}
+  <script>
+  function refreshPage() {
+        window.location.reload(); // Recargar la página actual
+    }
+    setInterval(refreshPage, 30000);
+  var y_voltage_panel = "{{y_voltage_panel|safe}}";
+  y_voltage_panel= JSON.parse(y_voltage_panel);
+  console.log(y_voltage_panel);
+
+  var y_voltage_battery = "{{y_voltage_battery|safe}}";
+  y_voltage_battery= JSON.parse(y_voltage_battery);
+
+
+  var x_voltage_panel = '{{x_voltage_panel|safe}}';
+  x_voltage_panel = JSON.parse(x_voltage_panel);
+
+
+
+  var x_voltage_battery = '{{x_voltage_battery|safe}}';
+  x_voltage_battery = JSON.parse(x_voltage_battery);
+  
+  var y_heights = "{{y_heights|safe}}";
+  y_heights= JSON.parse(y_heights);
+
+  var x_heights = '{{x_heights|safe}}';
+  x_heights = JSON.parse(x_heights);
+
+
+  
+
+  // ----------------------    Crucetas   ------------------------------// 
+  var cruceta1 = "{{latest_data.cruceta1|safe}}";
+  var cruceta2 = "{{latest_data.cruceta2|safe}}";
+  var cruceta3 = "{{latest_data.cruceta3|safe}}";
+  var cruceta4 = "{{latest_data.cruceta4|safe}}";
+
+  var button1 = document.getElementById('btCruceta1');
+  var button2 = document.getElementById('btCruceta2');
+  var button3 = document.getElementById('btCruceta3');
+  var button4 = document.getElementById('btCruceta4');
+
+try{
+  if (cruceta1==String('True')) {
+      
+      button1.classList.toggle('on');
+  }
+
+  if (cruceta2==String('True'))
+  {
+    button2.classList.toggle('on');
+  }
+
+  if (cruceta3 ==String('True'))
+  {
+    button3.classList.toggle('on');
+  }
+  if (cruceta4 ==String('True'))
+  {
+    button4.classList.toggle('on');
+  }
+} catch(error)
+{
+
+}
+
+
+  //----------------------------------------------------------------------//
+ 
+  var ctx2 = document.getElementById("chart-line").getContext("2d");
+
+  new Chart(ctx2, {
+    type: "line",
+    data: {
+      labels: x_heights,
+      datasets: [{
+        label: "Level (cm)",
+        tension: 0,
+        borderWidth: 0,
+        pointRadius: 5,
+        pointBackgroundColor: "rgba(255, 255, 255, .8)",
+        pointBorderColor: "transparent",
+        borderColor: "rgba(255, 255, 255, .8)",
+        borderColor: "rgba(255, 255, 255, .8)",
+        borderWidth: 4,
+        backgroundColor: "transparent",
+        fill: true,
+        data: y_heights,
+        maxBarThickness: 6
+
+      },
+    ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        }
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+      scales: {
+        y: {
+          grid: {
+            drawBorder: false,
+            display: true,
+            drawOnChartArea: true,
+            drawTicks: false,
+            borderDash: [5, 5],
+            color: 'rgba(255, 255, 255, .2)'
+          },
+          ticks: {
+            display: true,
+            color: '#f8f9fa',
+            padding: 10,
+            font: {
+              size: 14,
+              weight: 300,
+              family: "Roboto",
+              style: 'normal',
+              lineHeight: 2
+            },
+          }
+        },
+        x: {
+          grid: {
+            drawBorder: false,
+            display: false,
+            drawOnChartArea: false,
+            drawTicks: false,
+            borderDash: [5, 5]
+          },
+          ticks: {
+            display: true,
+            color: '#f8f9fa',
+            padding: 10,
+            font: {
+              size: 14,
+              weight: 300,
+              family: "Roboto",
+              style: 'normal',
+              lineHeight: 2
+            },
+          }
+        },
+      },
+    },
+  });
+
+  var ctx2 = document.getElementById("chart-voltages").getContext("2d");
+
+  new Chart(ctx2, {
+    type: "line",
+    data: {
+      labels: x_voltage_panel,
+      datasets: [{
+        label: "Panel",
+        tension: 0,
+        borderWidth: 0,
+        pointRadius: 5,
+        pointBackgroundColor: "rgba(255, 255, 255, .8)",
+        pointBorderColor: "transparent",
+        borderColor: "rgba(255, 0, 0, .8)",
+        borderWidth: 4,
+        backgroundColor: "transparent",
+        fill: true,
+        data: y_voltage_panel,
+        maxBarThickness: 6,
+        yAxisID: 'y',
+
+      }, {
+        label: "Battery",
+        tension: 0,
+        borderWidth: 0,
+        pointRadius: 5,
+        pointBackgroundColor: "rgba(255, 255, 255, .8)",
+        pointBorderColor: "transparent",
+        borderColor: "rgba(0, 0, 255, .8)",
+        borderWidth: 4,
+        backgroundColor: "transparent",
+        fill: true,
+        data: y_voltage_battery,
+        maxBarThickness: 6,
+        yAxisID: 'y1',
+
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false,
+        }
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index',
+      },
+      scales: {
+        y: {
+          position: "left",
+          grid: {
+            drawBorder: false,
+            display: true,            
+            drawOnChartArea: true,
+            drawTicks: false,
+            borderDash: [5, 5],
+            color: 'rgba(255, 255, 255, .2)'
+          },
+          ticks: {
+            display: true,
+            color: '#f8f9fa',
+            padding: 10,
+            font: {
+              size: 14,
+              weight: 300,
+              family: "Roboto",
+              style: 'normal',
+              lineHeight: 2
+            },
+          }
+        },
+        y1: {
+          position: "right",
+          grid: {
+            drawBorder: false,
+            display: true,            
+            drawOnChartArea: true,
+            drawTicks: false,
+            borderDash: [5, 5],
+            color: 'rgba(255, 255, 255, .2)'
+          },
+          ticks: {
+            display: true,
+            color: '#f8f9fa',
+            padding: 10,
+            font: {
+              size: 14,
+              weight: 300,
+              family: "Roboto",
+              style: 'normal',
+              lineHeight: 2
+            },
+          }
+        },
+        x: {
+          grid: {
+            drawBorder: false,
+            display: false,
+            drawOnChartArea: false,
+            drawTicks: false,
+            borderDash: [5, 5]
+          },
+          ticks: {
+            display: true,
+            color: '#f8f9fa',
+            padding: 10,
+            font: {
+              size: 14,
+              weight: 300,
+              family: "Roboto",
+              style: 'normal',
+              lineHeight: 2
+            },
+          }
+        },
+      },
+    },
+  });
+
+
+ /*
+        document.getElementById('ledButton1').addEventListener('click', function() {
+            this.classList.toggle('on');
+        });
+
+        document.getElementById('ledButton2').addEventListener('click', function() {
+            this.classList.toggle('on');
+        });
+
+        document.getElementById('ledButton3').addEventListener('click', function() {
+            this.classList.toggle('on');
+        });
+        document.getElementById('ledButton4').addEventListener('click', function() {
+            this.classList.toggle('on');
+        });*/
+</script> 
+ 
+  {% endblock scripts %}

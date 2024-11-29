@@ -1,0 +1,6 @@
+cv2
+numpy
+pillow
+paho-mqtt
+request
+whitenoise

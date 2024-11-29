@@ -1,0 +1,234 @@
+{% extends 'layouts/base.html' %}
+{% load i18n static %}
+
+{% block title %} {{title}} {% endblock title %}
+
+{% block content %}
+
+    <div class="container-fluid py-4">
+      <!--CONFIG-->
+
+      <div class="row">
+        <div class="col-xl-4 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-dark shadow-dark text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">settings</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Mode</p>
+                <h4 class="mb-0 text-success">{{server.mode}}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0"> <strong>Since: </strong> {{server.date}}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-xl-4 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">campaign</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Siren</p>
+                <h4 class="mb-0 {% if server.siren %}text-success{%else%}text-danger{%endif%}">{% if server.siren %}Enabled{%else%}Disabled{%endif%}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0"> <strong>Lapse: </strong> {{server.siren_lapse }} seconds</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-xl-4 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">email</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Emails</p>
+                <h4 class="mb-0 {% if server.email_to %}text-success{%else%}text-danger{%endif%}">{% if server.email_to %}Enabled{%else%}Disabled{%endif%}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0"> {{server.email_to}}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-xl-4 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">facebook</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Facebook</p>
+                <h4 class="mb-0 {% if server.facebook %}text-success{%else%}text-danger{%endif%}">{% if server.facebook %}Enabled{%else%}Disabled{%endif%}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0"> &nbsp</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">X</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Twitter</p>
+                <h4 class="mb-0 {% if server.twitter %}text-success{%else%}text-danger{%endif%}">{% if server.twitter %}Enabled{%else%}Disabled{%endif%}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0"> &nbsp</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-sm-6 mb-4">
+          <div class="card">
+            <div class="card-header p-3 pt-2">
+              <div class="icon icon-lg icon-shape bg-gradient-info shadow-info text-center border-radius-xl mt-n4 position-absolute">
+                <i class="material-icons opacity-10">telegram</i>
+              </div>
+              <div class="text-end pt-1">
+                <p class="text-sm mb-0 text-capitalize">Telegram</p>
+                <h4 class="mb-0 {% if serevr.telegram %}text-success{%else%}text-danger{%endif%}">{% if serevr.telegram %}Enabled{%else%}Disabled{%endif%}</h4>
+              </div>
+            </div>
+            <hr class="dark horizontal my-0">
+            <div class="card-footer p-3">
+              <p class="mb-0"> &nbsp</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- STATIONS -->
+      <div class="row mb-4">
+        <div class="col-lg-8 col-md-9 col-sm-12 mb-md-0 mb-4">
+          <div class="card">
+            <div class="card-header pb-0">
+              <div class="row">
+                <div class="col-lg-6 col-7">
+                  <h6>Stations</h6>                  
+                </div>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Name</th>
+                      <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Status</th>
+                      <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Last update</th> 
+                      <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Battery Voltage</th>
+                      <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Battery Panel</th>
+                      <th class="text-center text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Level(cm)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for station in stations %}
+                    <tr>
+                      <td class="align-middle">
+                        <span class="text-xs font-weight-bold ps-2">{{station.station.name}}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        {% if station.state == 0 %}
+                        <span class="badge badge-sm bg-gradient-secondary">Normal</span>
+                        {% elif station.state == 1 %}
+                        <span class="badge badge-sm bg-gradient-success">Light</span>
+                        {% elif station.state == 2 %}
+                        <span class="badge badge-sm bg-gradient-warning">Medium</span>
+                        {% elif station.state == 3 %}
+                        <span class="badge badge-sm bg-gradient-danger">High</span>
+                        {% endif %}
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-xs font-weight-bold">{{station.date}}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-xs font-weight-bold">{{station.voltage_battery}}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-xs font-weight-bold">{{station.voltage_pannel}}</span>
+                      </td>
+                      <td class="align-middle text-center">
+                        <span class="text-xs font-weight-bold">{{station.difference_H}}</span>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-3">
+          <div class="card h-100">
+            <div class="card-header pb-0">
+              <h6>Last Events</h6>
+              <p class="text-sm">
+                <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
+                <span class="font-weight-bold">{{events|length}}</span> last.
+              </p>
+            </div>
+            <div class="card-body p-3">
+              <div class="timeline timeline-one-side">
+                {% for event in events %}
+               
+                <div class="timeline-block mb-3">
+                  <span class="timeline-step">
+                    <i class="material-icons text-danger text-gradient">landslide</i>
+                    {% if event.state == 1 %}
+                    <i class="material-icons text-success text-gradient">landslide</i>
+                    {% elif event.state == 2 %}
+                    <i class="material-icons text-warning text-gradient">landslide</i>
+                    {% elif event.state == 3 %}
+                    <i class="material-icons text-danger text-gradient">landslide</i>
+                    {% endif %}
+                  </span>
+                  <div class="timeline-content">
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">{{event.station_name}}</h6>
+                    <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{event.activation_time|date:"d/m/Y H:i"}}</p>
+                  </div>
+      
+                </div>
+                {%endfor%}            
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+
+
+      </div>
+ 
+      
+      <div>{{debug}}</div>
+
+      {% include 'includes/footer.html' %}
+    </div>
+  {% endblock content %}
+
+  {% block scripts %}
+  
+  {% endblock scripts %}

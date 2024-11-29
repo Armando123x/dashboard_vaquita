@@ -1,0 +1,82 @@
+{% extends 'layouts/base.html' %}
+{% load i18n static %}
+
+{% block title %} {{title}} {% endblock title %}
+
+{% block content %}
+
+<link id="radio-lights" href="{% static 'css/material-dashboard-lights.css'}" rel="stylesheet"/>
+
+
+<div class="container-fluid  d-flex align-items-center py-4">
+    <div class="col-xl-12 col-sm-6 mb-4">
+    {%  for event in page_obj.object_list %}
+    <div class="timeline-block mb-3">
+        <span class="timeline-step">
+          <i class="material-icons text-danger text-gradient">landslide</i>
+          {% if event.state == 1 %}
+          <i class="material-icons text-success text-gradient">landslide</i>
+          {% elif event.state == 2 %}
+          <i class="material-icons text-warning text-gradient">landslide</i>
+          {% elif event.state == 3 %}
+          <i class="material-icons text-danger text-gradient">landslide</i>
+          {% endif %}
+        </span>
+        <div class="timeline-content">
+          <h6 class="text-dark text-sm font-weight-bold mb-0">{{event.station_name}}</h6>
+          <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">{{event.activation_time|date:"d/m/Y H:i:s"}}</p>
+        </div>
+
+    </div>
+    {%endfor%} 
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo; Anterior</span>
+                            </a>
+                        </li>
+                        {% endif %}
+        
+                        <li class="page-item disabled">
+                            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">Siguiente &raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+
+    </div>
+
+</div>
+<div>{{debug}}</div>
+
+
+
+{% include 'includes/footer.html' %}
+
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}

@@ -1,0 +1,20 @@
+django
+gunicorn
+python-dotenv
+whitenoise
+# django-admin-material-dashboard==1.0.10
+ 
+django-simple-history
+mysqlclient
+django-cors-headers
+django-debug-toolbar
+django-extensions
+paho-mqtt==1.6.1
+pillow
+twython
+opencv-python
+numpy==1.26
+
+Django==5.0.4
+
+requests

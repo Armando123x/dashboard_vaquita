@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  webapp:
+    container_name: dashboard
+    restart: always
+    build: app
+    command: gunicorn --config gunicorn-cfg.py core.wsgi
+    volumes:
+      - ./app:/app
+    networks:
+      - db_network
+      - web_network
+    depends_on: 
+      - mysql
+    env_file:
+      - .env
+    
+  
+   
+    # ports:
+    #   - "1885:1883"
+    #   - "9001:9001" 
+    #   - "8083:8083"
+    #   - "5007:5007"
+
+
+  nginx:
+    container_name: dash_nginx
+    restart: always
+    image: "nginx:latest"
+    ports:
+      - "5085:5085" 
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - web_network
+    depends_on: 
+      - webapp
+    environment:
+      - TZ=America/Lima 
+ 
+
+  mysql:
+    container_name: 'dash_mysql'
+    image: 'mysql:8'
+    volumes:
+      - ./mysql:/var/lib/mysql
+    restart: always
+    env_file: .env
+  
+ 
+networks:
+  db_network:
+    driver: bridge
+  web_network:
+    driver: bridge
+ 
